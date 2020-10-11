@@ -2,176 +2,37 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="http://unpkg.com/vue"></script>
-    <style>
-        .card {
-            color: white;
-            background-color: lightgray;
-            margin: 0.5rem;
-            width: 237px;
-            min-height: 0px;
-            display: flex;
-        }
-
-        .card img {
-            width: 100%;
-        }
-
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(237px, 1fr));
-            grid-auto-rows: auto;
-            margin-bottom: 13px;
-            justify-items: center;
-            grid-gap: 22px;
-            justify-content: space-between;
-            width: 100%;
-        }
-
-        .pic-gender-container {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .person-gender {
-            text-align: center;
-            background: red;
-            margin-top: 10px;
-            display: inline-block;
-            padding: 4px;
-            height: 22px;
-            line-height: 22px;
-            font-size: 14px;
-        }
-
-        .person-name {
-            margin-left: 10px;
-            background-color: blue;
-            font-size: 14px;
-        }
-
-        .right {
-            display: flex;
-            flex-direction: column;
-            align-self: center;
-            margin: 0.5rem;
-        }
-
-        .left {
-            margin: 0.5rem;
-        }
-
-        .wrapper {
-            display: flex;
-            position: relative;
-            z-index: 1;
-        }
-
-        .wrapper:hover:after {
-            content: '';
-            text-align: center;
-            line-height: 178px;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background: rgba(0, 0, 0, 0.6);
-            opacity: 90%;
-            transition: all 1s;
-            -webkit-transition: all 1s;
-        }
-
-
-        .label:after {
-            content: '';
-            text-align: center;
-            line-height: 178px;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            /* background: rgba(0, 0, 0, 0.6); */
-            opacity: 90%;
-            transition: all 1s;
-            -webkit-transition: all 1s;
-            z-index: 2;
-        }
-    </style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Persons list</title>
+  <script src="http://unpkg.com/vue"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div id="app">
-        <div class="cards">
-            <div class="card" v-for="(person, index) of personsList" @click="onCardClick(person.index)">
-                <div class="label">{{getLabel(person.index)}} {{person.index}}</div>
-                <div class="wrapper">
-                    <div class="left">
-                        <div class="pic-gender-container">
-                            <img :src="person.picture.large" />
-                            <div class="person-gender">{{person.gender}}</div>
-                        </div>
-                    </div>
-                    <div class="right">
-                        <div class="person-name">{{person.name.first}} {{person.name.last}}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div id="app">
+    <div class="cards">
+      <div class="card" v-for="(person, index) of personsList" :key="index">
+        <person-card :person="person" />
+      </div>
     </div>
-    <script>
-        new Vue({
-            el: '#app',
-            data() {
-                return {
-                    personsList: {}
-                }
-            },
-            beforeMount() {
-                this.getPersonsData().then(() => {
-                    this.addFieldsPerPerson();
-                })
-            },
-            methods: {
-                async getPersonsData() {
-                    let persons;
-                    let res;
-                    try {
-                        const res = await fetch('https://randomuser.me/api/?results=7');
-                        persons = await res.json();
-                    }
-                    catch {
-                        console.log('can\'t fetch data. code: ' + res.status);
-                    }
-                    this.personsList = persons.results;
-                },
-                addFieldsPerPerson() {
-                    for (let i = 0; i < this.personsList.length; i++) {
-                        this.personsList[i].index = i;
-                        this.personsList[i].state = false;
-                    }
-                    this.$forceUpdate();
-                    console.log(this.personsList);
-                },
-                getLabel(index) {
-                    if (this.personsList[index] && this.personsList[index].state) {
-                        return this.personsList[index].phone;
-                    }
-                    return 'Click me';
-                },
-                onCardClick(index) {
-                    this.personsList[index].state = true;
-                    this.$forceUpdate();
-                }
-            }
-        })
-    </script>
+  </div>
+
+  <script type="text/x-template" id="person-card">
+    <div class="wrapper" @click="onClick()">
+        <div class="label hide">{{ getLabel }}</div>
+        <div class="left">
+          <div class="pic-gender-container">
+            <img :src="person.picture.large" />
+            <div class="person-gender">{{ person.gender }}</div>
+        </div>
+        </div>
+        <div class="right">
+          <div class="person-name">{{ person.name.first }} {{ person.name.last }}</div>
+        </div>
+     </div>
+  </script>
 </body>
 
 </html>
